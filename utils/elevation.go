@@ -2,10 +2,9 @@ package utils
 
 import (
 	"fmt"
+	// Placeholder: Add proper Windows admin check with syscall if needed
 )
 
 func RequireAdmin() {
-	// Placeholder: check for admin privileges
-	fmt.Println("Checking for admin privileges (not implemented)")
-	// In production, use syscall to check token privileges
+	fmt.Println("[!] Note: Admin check not implemented. Run this tool as administrator.")
 }

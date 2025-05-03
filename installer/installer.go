@@ -1,40 +1,90 @@
 package installer
 
 import (
+	"dawn/utils"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"os/exec"
 )
 
+type CustomApp struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
+type Preset struct {
+	Name       string      `json:"name"`
+	Version    string      `json:"version"`
+	Apps       []string    `json:"apps"`
+	CustomApps []CustomApp `json:"custom_apps,omitempty"`
+}
+
 func runInstaller(cmd string) {
-	fmt.Println("Installing:", cmd)
+	fmt.Println("Running:", cmd)
 	exec.Command("cmd", "/C", cmd).Run()
 }
 
-func InstallFromPreset(name string) {
-	data, _ := ioutil.ReadFile("presets/default.json")
-	var presets map[string][]string
-	json.Unmarshal(data, &presets)
-
-	apps, ok := presets[name]
-	if !ok {
-		fmt.Println("Preset not found.")
+func InstallFromPreset(filename string) {
+	path := "presets/" + filename + ".json"
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		fmt.Println("Error reading preset file:", err)
 		return
 	}
 
-	for _, app := range apps {
+	var preset Preset
+	if err := json.Unmarshal(data, &preset); err != nil {
+		fmt.Println("Invalid preset format:", err)
+		return
+	}
+
+	fmt.Printf("Installing preset: %s (v%s)\n", preset.Name, preset.Version)
+
+	for _, app := range preset.Apps {
 		if cmd, ok := AppInstallers[app]; ok {
 			runInstaller(cmd)
+		} else {
+			fmt.Printf("Unknown app: %s\n", app)
+		}
+	}
+
+	if len(preset.CustomApps) > 0 {
+		for _, custom := range preset.CustomApps {
+			fmt.Printf("Installing custom app: %s\n", custom.Name)
+			runInstaller(custom.URL)
 		}
 	}
 }
 
 func InstallFromURL(url string) {
-	// Placeholder: fetch JSON from URL and install
-	fmt.Println("Not yet implemented.")
-}
+	tempFile := "temp_preset.json"
+	err := utils.DownloadFile(tempFile, url)
+	if err != nil {
+		fmt.Println("Failed to download preset:", err)
+		return
+	}
+	defer os.Remove(tempFile)
 
-func InteractiveInstall() {
-	fmt.Println("Interactive mode not implemented yet.")
+	data, _ := ioutil.ReadFile(tempFile)
+	var preset Preset
+	json.Unmarshal(data, &preset)
+
+	fmt.Printf("Installing remote preset: %s (v%s)\n", preset.Name, preset.Version)
+
+	for _, app := range preset.Apps {
+		if cmd, ok := AppInstallers[app]; ok {
+			runInstaller(cmd)
+		} else {
+			fmt.Printf("Unknown app: %s\n", app)
+		}
+	}
+
+	if len(preset.CustomApps) > 0 {
+		for _, custom := range preset.CustomApps {
+			fmt.Printf("Installing custom app: %s\n", custom.Name)
+			runInstaller(custom.URL)
+		}
+	}
 }

@@ -6,7 +6,6 @@ import (
 	"os"
 )
 
-// DownloadFile downloads a file from the given URL and saves it locally.
 func DownloadFile(filepath string, url string) error {
 	resp, err := http.Get(url)
 	if err != nil {
