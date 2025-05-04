@@ -1,25 +1,32 @@
 package main
 
 import (
-	"dawn/installer"
-	"dawn/utils"
-	"flag"
 	"fmt"
+	"os"
+
+	"dawn/internal/admin"
+	"dawn/internal/cli"
+	"dawn/internal/preset"
 )
 
 func main() {
-	preset := flag.String("preset", "", "Install using a named preset (without extension)")
-	url := flag.String("url", "", "Install using a remote preset URL")
-	flag.Parse()
+	admin.CheckOrExit()
 
-	utils.RequireAdmin()
+	args := os.Args[1:]
 
 	switch {
-	case *preset != "":
-		installer.InstallFromPreset(*preset)
-	case *url != "":
-		installer.InstallFromURL(*url)
+	case len(args) == 0:
+		cli.RunInteractive()
+	case args[0] == "--preset" && len(args) > 1:
+		p := preset.LoadLocal(args[1])
+		cli.ConfirmAndInstall(p)
+	case args[0] == "--url" && len(args) > 1:
+		p := preset.LoadRemote(args[1])
+		cli.ConfirmAndInstall(p)
 	default:
-		fmt.Println("No preset or URL provided. Usage: \ndawn --preset [name]\ndawn --url [url]")
+		fmt.Println("Usage:")
+		fmt.Println("  dawn                 (interactive mode)")
+		fmt.Println("  dawn --preset name   (use local preset)")
+		fmt.Println("  dawn --url URL       (use remote preset)")
 	}
 }

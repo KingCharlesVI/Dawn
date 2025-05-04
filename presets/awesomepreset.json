@@ -1,6 +1,0 @@
-{
-    "name": "Awesome Preset",
-    "version": "1.0",
-    "apps": ["chrome", "discord", "spotify"],
-    "custom_apps": []
-}
