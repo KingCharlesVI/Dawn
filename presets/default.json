@@ -1,6 +1,0 @@
-{
-    "name": "Default",
-    "version": "1.0",
-    "apps": ["chrome", "discord", "steam"],
-    "custom_apps": []
-}  
