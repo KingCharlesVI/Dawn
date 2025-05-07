@@ -1,0 +1,6 @@
+{
+    "name": "Default",
+    "version": "1.0",
+    "apps": ["discord", "steam", "blender", "nzxt", "roblox", "java", "lghub"],
+    "custom_apps": []
+}

@@ -98,6 +98,8 @@ def get_installer_url(app_name: str) -> str:
         "discord": "https://discord.com/api/download?platform=win",
         "steam": "https://steamcdn-a.akamaihd.net/client/installer/SteamSetup.exe",
         "7zip": "https://sourceforge.net/projects/sevenzip/files/latest/download",
+        "roblox": "https://www.roblox.com/download/client?os=win",
+        "nzxt": "https://nzxt-app.nzxt.com/NZXT-CAM-Setup.exe",
         # Add more apps and URLs here
     }
     
@@ -156,6 +158,7 @@ def get_chocolatey_apps():
         "audacity",
         "handbrake",
         "gimp",
+        "blender",
         "libreoffice-fresh",
         "java",
         "python",
